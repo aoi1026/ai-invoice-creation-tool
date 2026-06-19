@@ -45,7 +45,7 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = invoiceSchema.safeParse(body);
   if (!parsed.success) {
-    return fail("Invalid invoice", 400, parsed.error.flatten().fieldErrors);
+    return fail("請求書の内容が正しくありません", 400, parsed.error.flatten().fieldErrors);
   }
 
   const { items, base } = buildInvoiceData(parsed.data);
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
   const dupe = await prisma.invoice.findUnique({
     where: { companyId_number: { companyId: user.companyId, number } },
   });
-  if (dupe) return fail(`Invoice number ${number} already exists`, 409);
+  if (dupe) return fail(`請求書番号 ${number} は既に存在します`, 409);
 
   const invoice = await prisma.invoice.create({
     data: {

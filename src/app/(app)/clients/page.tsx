@@ -68,24 +68,24 @@ export default function ClientsPage() {
       } else {
         await api("/api/clients", { method: "POST", json: payload });
       }
-      toast.push("Client saved", "success");
+      toast.push("取引先を保存しました", "success");
       setOpen(false);
       await load();
     } catch (e) {
-      toast.push(e instanceof Error ? e.message : "Save failed", "error");
+      toast.push(e instanceof Error ? e.message : "保存に失敗しました", "error");
     } finally {
       setSaving(false);
     }
   }
 
   async function remove(c: Client) {
-    if (!confirm(`Delete ${c.name}?`)) return;
+    if (!confirm(`${c.name} を削除しますか？`)) return;
     try {
       await api(`/api/clients/${c.id}`, { method: "DELETE" });
-      toast.push("Client deleted", "success");
+      toast.push("取引先を削除しました", "success");
       await load();
     } catch (e) {
-      toast.push(e instanceof Error ? e.message : "Delete failed", "error");
+      toast.push(e instanceof Error ? e.message : "削除に失敗しました", "error");
     }
   }
 
@@ -95,15 +95,15 @@ export default function ClientsPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title="Clients"
-        description="Manage your billing recipients."
-        action={<Button onClick={openNew}>+ New client</Button>}
+        title="取引先"
+        description="請求先を管理します。"
+        action={<Button onClick={openNew}>＋ 取引先を追加</Button>}
       />
 
       {loading ? (
         <div className="flex justify-center py-20"><Spinner className="h-8 w-8" /></div>
       ) : clients.length === 0 ? (
-        <EmptyState title="No clients yet" description="Add clients to fill invoices faster." action={<Button onClick={openNew}>+ New client</Button>} />
+        <EmptyState title="取引先がまだありません" description="取引先を登録すると、請求書をすばやく作成できます。" action={<Button onClick={openNew}>＋ 取引先を追加</Button>} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {clients.map((c) => (
@@ -113,11 +113,11 @@ export default function ClientsPage() {
                 {c.email && <p className="mt-0.5 text-sm text-slate-500">{c.email}</p>}
                 {c.phone && <p className="text-sm text-slate-500">{c.phone}</p>}
                 {c.address && <p className="mt-1 text-xs text-slate-400">{c.address}</p>}
-                <p className="mt-2 text-xs font-medium text-slate-400">{c._count.invoices} invoice(s)</p>
+                <p className="mt-2 text-xs font-medium text-slate-400">請求書 {c._count.invoices} 件</p>
               </div>
               <div className="mt-4 flex gap-2">
-                <Button size="sm" variant="secondary" onClick={() => openEdit(c)}>Edit</Button>
-                <Button size="sm" variant="ghost" onClick={() => remove(c)}>Delete</Button>
+                <Button size="sm" variant="secondary" onClick={() => openEdit(c)}>編集</Button>
+                <Button size="sm" variant="ghost" onClick={() => remove(c)}>削除</Button>
               </div>
             </Card>
           ))}
@@ -127,23 +127,23 @@ export default function ClientsPage() {
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title={editing ? "Edit client" : "New client"}
+        title={editing ? "取引先を編集" : "取引先を追加"}
         footer={
           <>
-            <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={save} loading={saving} disabled={!form.name.trim()}>Save</Button>
+            <Button variant="secondary" onClick={() => setOpen(false)}>キャンセル</Button>
+            <Button onClick={save} loading={saving} disabled={!form.name.trim()}>保存</Button>
           </>
         }
       >
         <div className="space-y-4">
-          <Field label="Name"><Input value={form.name} onChange={set("name")} /></Field>
+          <Field label="取引先名"><Input value={form.name} onChange={set("name")} /></Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Email"><Input type="email" value={form.email} onChange={set("email")} /></Field>
-            <Field label="Phone"><Input value={form.phone} onChange={set("phone")} /></Field>
+            <Field label="メールアドレス"><Input type="email" value={form.email} onChange={set("email")} /></Field>
+            <Field label="電話番号"><Input value={form.phone} onChange={set("phone")} /></Field>
           </div>
-          <Field label="Address"><Textarea rows={2} value={form.address} onChange={set("address")} /></Field>
-          <Field label="Tax ID / 登録番号"><Input value={form.taxId} onChange={set("taxId")} /></Field>
-          <Field label="Notes"><Textarea rows={2} value={form.notes} onChange={set("notes")} /></Field>
+          <Field label="住所"><Textarea rows={2} value={form.address} onChange={set("address")} /></Field>
+          <Field label="登録番号（インボイス）"><Input value={form.taxId} onChange={set("taxId")} /></Field>
+          <Field label="備考"><Textarea rows={2} value={form.notes} onChange={set("notes")} /></Field>
         </div>
       </Modal>
     </div>

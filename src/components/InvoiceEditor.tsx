@@ -12,7 +12,7 @@ import {
   Textarea,
   useToast,
 } from "@/components/ui";
-import { CURRENCIES, computeTotals, formatMoney, toDateInput } from "@/lib/format";
+import { CURRENCIES, STATUS_LABELS, computeTotals, formatMoney, toDateInput } from "@/lib/format";
 
 type Item = { description: string; quantity: number; unitPrice: number };
 
@@ -160,7 +160,7 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
       paymentTerms: t.paymentTerms ?? f.paymentTerms,
       items: items.length ? items : f.items,
     }));
-    toast.push(`Applied template “${t.name}”`, "info");
+    toast.push(`テンプレート「${t.name}」を適用しました`, "info");
   }
 
   // Line item helpers
@@ -187,11 +187,11 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
   async function save() {
     setError("");
     if (!form.clientName.trim()) {
-      setError("Client name is required.");
+      setError("請求先名を入力してください。");
       return;
     }
     if (!form.items.some((it) => it.description.trim())) {
-      setError("Add at least one line item with a description.");
+      setError("内容を入力した明細を1件以上追加してください。");
       return;
     }
     setSaving(true);
@@ -214,19 +214,19 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
     try {
       if (form.id) {
         await api(`/api/invoices/${form.id}`, { method: "PATCH", json: payload });
-        toast.push("Invoice updated", "success");
+        toast.push("請求書を更新しました", "success");
         router.push(`/invoices/${form.id}`);
       } else {
         const res = await api<{ invoice: { id: string } }>("/api/invoices", {
           method: "POST",
           json: payload,
         });
-        toast.push("Invoice created", "success");
+        toast.push("請求書を作成しました", "success");
         router.push(`/invoices/${res.invoice.id}`);
       }
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Save failed");
+      setError(err instanceof Error ? err.message : "保存に失敗しました");
       setSaving(false);
     }
   }
@@ -237,32 +237,32 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
         <AIPanel currency={form.currency} onDraft={applyDraft} />
 
         <Card className="p-6">
-          <h2 className="text-sm font-semibold text-slate-900">Invoice details</h2>
+          <h2 className="text-sm font-semibold text-slate-900">請求書情報</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <Field label="Invoice number" hint={form.id ? undefined : "Leave blank to auto-generate"}>
-              <Input value={form.number} onChange={(e) => update("number", e.target.value)} placeholder="Auto" />
+            <Field label="請求書番号" hint={form.id ? undefined : "空欄の場合は自動採番されます"}>
+              <Input value={form.number} onChange={(e) => update("number", e.target.value)} placeholder="自動" />
             </Field>
-            <Field label="Status">
+            <Field label="ステータス">
               <Select value={form.status} onChange={(e) => update("status", e.target.value)}>
                 {["DRAFT", "SENT", "PAID", "OVERDUE", "CANCELLED"].map((s) => (
-                  <option key={s} value={s}>{s.charAt(0) + s.slice(1).toLowerCase()}</option>
+                  <option key={s} value={s}>{STATUS_LABELS[s]}</option>
                 ))}
               </Select>
             </Field>
-            <Field label="Issue date">
+            <Field label="発行日">
               <Input type="date" value={form.issueDate} onChange={(e) => update("issueDate", e.target.value)} />
             </Field>
-            <Field label="Due date">
+            <Field label="支払期限">
               <Input type="date" value={form.dueDate} onChange={(e) => update("dueDate", e.target.value)} />
             </Field>
-            <Field label="Currency">
+            <Field label="通貨">
               <Select value={form.currency} onChange={(e) => update("currency", e.target.value)}>
                 {CURRENCIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </Select>
             </Field>
-            <Field label="Tax rate (%)">
+            <Field label="税率（%）">
               <Input type="number" step="0.1" min="0" max="100" value={form.taxRate}
                 onChange={(e) => update("taxRate", Number(e.target.value))} />
             </Field>
@@ -271,10 +271,10 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
 
         <Card className="p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Bill to</h2>
+            <h2 className="text-sm font-semibold text-slate-900">請求先</h2>
             {clients.length > 0 && (
               <Select className="w-48" value={form.clientId} onChange={(e) => pickClient(e.target.value)}>
-                <option value="">Choose a saved client…</option>
+                <option value="">保存済みの取引先から選択…</option>
                 {clients.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
@@ -282,16 +282,16 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
             )}
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <Field label="Client / recipient name">
-              <Input value={form.clientName} onChange={(e) => update("clientName", e.target.value)} placeholder="Acme Inc." />
+            <Field label="請求先名">
+              <Input value={form.clientName} onChange={(e) => update("clientName", e.target.value)} placeholder="株式会社サンプル" />
             </Field>
-            <Field label="Email">
-              <Input type="email" value={form.clientEmail} onChange={(e) => update("clientEmail", e.target.value)} placeholder="ap@acme.com" />
+            <Field label="メールアドレス">
+              <Input type="email" value={form.clientEmail} onChange={(e) => update("clientEmail", e.target.value)} placeholder="keiri@example.com" />
             </Field>
-            <Field label="Address">
+            <Field label="住所">
               <Textarea rows={2} value={form.clientAddress} onChange={(e) => update("clientAddress", e.target.value)} />
             </Field>
-            <Field label="Tax ID / 登録番号">
+            <Field label="登録番号（インボイス）">
               <Input value={form.clientTaxId} onChange={(e) => update("clientTaxId", e.target.value)} />
             </Field>
           </div>
@@ -299,10 +299,10 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
 
         <Card className="p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Line items</h2>
+            <h2 className="text-sm font-semibold text-slate-900">明細</h2>
             {templates.length > 0 && (
               <Select className="w-44" defaultValue="" onChange={(e) => { applyTemplate(e.target.value); e.target.value = ""; }}>
-                <option value="">Apply template…</option>
+                <option value="">テンプレートを適用…</option>
                 {templates.map((t) => (
                   <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
@@ -312,15 +312,15 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
 
           <div className="mt-4 space-y-3">
             <div className="hidden grid-cols-12 gap-2 px-1 text-xs font-medium uppercase tracking-wide text-slate-500 sm:grid">
-              <div className="col-span-6">Description</div>
-              <div className="col-span-2 text-right">Qty</div>
-              <div className="col-span-2 text-right">Unit price</div>
-              <div className="col-span-2 text-right">Amount</div>
+              <div className="col-span-6">品目・内容</div>
+              <div className="col-span-2 text-right">数量</div>
+              <div className="col-span-2 text-right">単価</div>
+              <div className="col-span-2 text-right">金額</div>
             </div>
             {form.items.map((it, i) => (
               <div key={i} className="grid grid-cols-12 items-start gap-2">
                 <div className="col-span-12 sm:col-span-6">
-                  <Input value={it.description} onChange={(e) => setItem(i, "description", e.target.value)} placeholder="Item description" />
+                  <Input value={it.description} onChange={(e) => setItem(i, "description", e.target.value)} placeholder="品目・内容" />
                 </div>
                 <div className="col-span-4 sm:col-span-2">
                   <Input type="number" step="any" className="text-right" value={it.quantity} onChange={(e) => setItem(i, "quantity", e.target.value)} />
@@ -347,17 +347,17 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
             ))}
           </div>
           <button onClick={addItem} className="mt-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
-            + Add line item
+            ＋ 明細を追加
           </button>
         </Card>
 
         <Card className="p-6">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Payment terms">
-              <Input value={form.paymentTerms} onChange={(e) => update("paymentTerms", e.target.value)} placeholder="Net 30" />
+            <Field label="支払条件">
+              <Input value={form.paymentTerms} onChange={(e) => update("paymentTerms", e.target.value)} placeholder="月末締め翌月末払い" />
             </Field>
-            <Field label="Notes">
-              <Textarea rows={2} value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Thank you for your business." />
+            <Field label="備考">
+              <Textarea rows={2} value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="お取引ありがとうございます。" />
             </Field>
           </div>
         </Card>
@@ -367,18 +367,18 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
       <div className="lg:col-span-1">
         <div className="sticky top-6 space-y-4">
           <Card className="p-6">
-            <h2 className="text-sm font-semibold text-slate-900">Summary</h2>
+            <h2 className="text-sm font-semibold text-slate-900">概要</h2>
             <dl className="mt-4 space-y-2 text-sm">
               <div className="flex justify-between">
-                <dt className="text-slate-500">Subtotal</dt>
+                <dt className="text-slate-500">小計</dt>
                 <dd className="font-medium text-slate-900">{formatMoney(totals.subtotal, form.currency)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Tax ({form.taxRate}%)</dt>
+                <dt className="text-slate-500">消費税（{form.taxRate}%）</dt>
                 <dd className="font-medium text-slate-900">{formatMoney(totals.taxAmount, form.currency)}</dd>
               </div>
               <div className="flex justify-between border-t border-slate-200 pt-2 text-base">
-                <dt className="font-semibold text-slate-900">Total</dt>
+                <dt className="font-semibold text-slate-900">合計</dt>
                 <dd className="font-bold text-indigo-600">{formatMoney(totals.total, form.currency)}</dd>
               </div>
             </dl>
@@ -387,10 +387,10 @@ export function InvoiceEditor({ initial }: { initial?: InvoiceFormState }) {
 
             <div className="mt-5 flex flex-col gap-2">
               <Button onClick={save} loading={saving} className="w-full">
-                {form.id ? "Save changes" : "Create invoice"}
+                {form.id ? "変更を保存" : "請求書を作成"}
               </Button>
               <Button variant="secondary" className="w-full" onClick={() => router.back()}>
-                Cancel
+                キャンセル
               </Button>
             </div>
           </Card>
@@ -423,9 +423,9 @@ function AIPanel({
         json: { instruction, defaultCurrency: currency },
       });
       onDraft(res.draft);
-      toast.push("Draft generated — review and adjust below", "success");
+      toast.push("ドラフトを生成しました。内容を確認・調整してください", "success");
     } catch (err) {
-      toast.push(err instanceof Error ? err.message : "Generation failed", "error");
+      toast.push(err instanceof Error ? err.message : "生成に失敗しました", "error");
     } finally {
       setGenLoading(false);
     }
@@ -440,9 +440,9 @@ function AIPanel({
       fd.append("file", file);
       const res = await api<{ draft: AIDraft }>("/api/ai/ocr", { method: "POST", body: fd });
       onDraft(res.draft);
-      toast.push("Extracted from document — review below", "success");
+      toast.push("ドキュメントから抽出しました。内容を確認してください", "success");
     } catch (err) {
-      toast.push(err instanceof Error ? err.message : "Extraction failed", "error");
+      toast.push(err instanceof Error ? err.message : "抽出に失敗しました", "error");
     } finally {
       setOcrLoading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -455,21 +455,21 @@ function AIPanel({
         <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-indigo-600 text-white">
           <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4"><path d="M5 3l1.5 4L11 8.5 6.5 10 5 14l-1.5-4L-1 8.5 3.5 7 5 3z" transform="translate(4 1)" fill="currentColor" /></svg>
         </span>
-        <h2 className="text-sm font-semibold text-slate-900">Create with AI</h2>
+        <h2 className="text-sm font-semibold text-slate-900">AIで作成</h2>
       </div>
       <p className="mt-1 text-xs text-slate-500">
-        Describe the invoice in plain language, or upload a receipt / PDF to extract it automatically.
+        請求内容を自然な日本語で入力するか、領収書・PDFをアップロードすると自動で読み取ります。
       </p>
       <Textarea
         rows={3}
         className="mt-3"
         value={instruction}
         onChange={(e) => setInstruction(e.target.value)}
-        placeholder="e.g. Bill Acme Inc. for 20 hours of consulting at ¥15,000/hr plus a ¥50,000 setup fee, 10% tax, due in 30 days."
+        placeholder="例：株式会社サンプルにコンサルティング20時間（時給15,000円）と初期費用50,000円を請求。消費税10%、支払期限は30日後。"
       />
       <div className="mt-3 flex flex-wrap gap-2">
         <Button onClick={generate} loading={genLoading} size="sm">
-          Generate draft
+          ドラフトを生成
         </Button>
         <input
           ref={fileRef}
@@ -479,7 +479,7 @@ function AIPanel({
           onChange={onFile}
         />
         <Button variant="secondary" size="sm" loading={ocrLoading} onClick={() => fileRef.current?.click()}>
-          📎 Upload & extract (OCR)
+          📎 アップロードして抽出（OCR）
         </Button>
       </div>
     </Card>

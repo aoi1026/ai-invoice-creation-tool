@@ -16,7 +16,7 @@ export async function PATCH(req: Request) {
   if ("error" in auth) return auth.error;
   const body = await req.json().catch(() => null);
   const parsed = companySchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid input", 400, parsed.error.flatten().fieldErrors);
+  if (!parsed.success) return fail("入力内容が正しくありません", 400, parsed.error.flatten().fieldErrors);
   const company = await prisma.company.update({
     where: { id: auth.user.companyId },
     data: parsed.data,

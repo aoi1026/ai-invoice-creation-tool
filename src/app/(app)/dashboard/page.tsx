@@ -53,25 +53,25 @@ export default function DashboardPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title="Dashboard"
-        description="Your invoicing at a glance."
+        title="ダッシュボード"
+        description="請求状況をひと目で確認できます。"
         action={
           <Link href="/invoices/new">
-            <Button>+ New invoice</Button>
+            <Button>＋ 新規請求書</Button>
           </Link>
         }
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Outstanding" value={formatMoney(stats.outstanding, stats.currency)} accent="text-amber-600" />
-        <StatCard label="Paid (total)" value={formatMoney(stats.paid, stats.currency)} accent="text-emerald-600" />
-        <StatCard label="Invoices" value={String(stats.invoiceCount)} />
-        <StatCard label="Clients" value={String(stats.clientCount)} />
+        <StatCard label="未収金" value={formatMoney(stats.outstanding, stats.currency)} accent="text-amber-600" />
+        <StatCard label="入金合計" value={formatMoney(stats.paid, stats.currency)} accent="text-emerald-600" />
+        <StatCard label="請求書数" value={String(stats.invoiceCount)} />
+        <StatCard label="取引先数" value={String(stats.clientCount)} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card className="p-6 lg:col-span-2">
-          <h2 className="text-sm font-semibold text-slate-900">Revenue (last 6 months)</h2>
+          <h2 className="text-sm font-semibold text-slate-900">売上（直近6か月）</h2>
           <div className="mt-6 flex h-48 items-stretch gap-3">
             {stats.months.map((m) => (
               <div key={m.label} className="flex flex-1 flex-col items-center gap-2">
@@ -89,7 +89,7 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-sm font-semibold text-slate-900">By status</h2>
+          <h2 className="text-sm font-semibold text-slate-900">ステータス別</h2>
           <div className="mt-4 space-y-3">
             {["DRAFT", "SENT", "PAID", "OVERDUE", "CANCELLED"].map((s) => {
               const v = stats.byStatus[s];
@@ -98,13 +98,13 @@ export default function DashboardPage() {
                 <div key={s} className="flex items-center justify-between">
                   <Badge className={STATUS_STYLES[s]}>{STATUS_LABELS[s]}</Badge>
                   <span className="text-sm font-medium text-slate-700">
-                    {v.count} · {formatMoney(v.total, stats.currency)}
+                    {v.count}件 · {formatMoney(v.total, stats.currency)}
                   </span>
                 </div>
               );
             })}
             {Object.keys(stats.byStatus).length === 0 && (
-              <p className="text-sm text-slate-500">No invoices yet.</p>
+              <p className="text-sm text-slate-500">請求書はまだありません。</p>
             )}
           </div>
         </Card>
@@ -112,18 +112,18 @@ export default function DashboardPage() {
 
       <Card className="mt-6">
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <h2 className="text-sm font-semibold text-slate-900">Recent invoices</h2>
+          <h2 className="text-sm font-semibold text-slate-900">最近の請求書</h2>
           <Link href="/invoices" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-            View all →
+            すべて表示 →
           </Link>
         </div>
         {recent.length === 0 ? (
           <p className="px-6 py-10 text-center text-sm text-slate-500">
-            No invoices yet.{" "}
+            請求書はまだありません。{" "}
             <Link href="/invoices/new" className="font-medium text-indigo-600">
-              Create your first one
+              最初の請求書を作成
             </Link>
-            .
+            。
           </p>
         ) : (
           <ul className="divide-y divide-slate-100">

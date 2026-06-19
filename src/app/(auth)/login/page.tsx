@@ -22,15 +22,15 @@ export default function LoginPage() {
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "ログインに失敗しました");
       setLoading(false);
     }
   }
 
   return (
     <Card className="p-8">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">Welcome back</h1>
-      <p className="mt-1 text-sm text-slate-500">Sign in to your Invora account.</p>
+      <h1 className="text-2xl font-bold tracking-tight text-slate-900">おかえりなさい</h1>
+      <p className="mt-1 text-sm text-slate-500">Invoraアカウントにログインしてください。</p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
         {error && (
@@ -38,7 +38,7 @@ export default function LoginPage() {
             {error}
           </div>
         )}
-        <Field label="Email">
+        <Field label="メールアドレス">
           <Input
             type="email"
             autoComplete="email"
@@ -48,7 +48,7 @@ export default function LoginPage() {
             placeholder="you@company.com"
           />
         </Field>
-        <Field label="Password">
+        <Field label="パスワード">
           <Input
             type="password"
             autoComplete="current-password"
@@ -60,18 +60,18 @@ export default function LoginPage() {
         </Field>
         <div className="flex justify-end">
           <Link href="/forgot-password" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-            Forgot password?
+            パスワードをお忘れですか？
           </Link>
         </div>
         <Button type="submit" loading={loading} className="w-full">
-          Sign in
+          ログイン
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-slate-500">
-        Don&apos;t have an account?{" "}
+        アカウントをお持ちでない方は{" "}
         <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-          Create one
+          新規登録
         </Link>
       </p>
     </Card>

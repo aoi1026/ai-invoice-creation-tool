@@ -46,11 +46,11 @@ export default function InvoicesPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title="Invoices"
-        description="Search, filter, and manage your invoice history."
+        title="請求書"
+        description="請求書履歴を検索・絞り込み・管理できます。"
         action={
           <Link href="/invoices/new">
-            <Button>+ New invoice</Button>
+            <Button>＋ 新規請求書</Button>
           </Link>
         }
       />
@@ -63,14 +63,14 @@ export default function InvoicesPage() {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search by number, client, or email…"
+            placeholder="番号・取引先・メールで検索…"
             className="pl-10"
           />
         </div>
         <Select value={status} onChange={(e) => setStatus(e.target.value)} className="sm:w-48">
           {STATUSES.map((s) => (
             <option key={s} value={s}>
-              {s === "ALL" ? "All statuses" : STATUS_LABELS[s]}
+              {s === "ALL" ? "すべてのステータス" : STATUS_LABELS[s]}
             </option>
           ))}
         </Select>
@@ -82,11 +82,11 @@ export default function InvoicesPage() {
         </div>
       ) : invoices.length === 0 ? (
         <EmptyState
-          title="No invoices found"
-          description={q || status !== "ALL" ? "Try adjusting your search or filters." : "Create your first invoice to get started."}
+          title="請求書が見つかりません"
+          description={q || status !== "ALL" ? "検索条件や絞り込みを変更してみてください。" : "最初の請求書を作成して始めましょう。"}
           action={
             <Link href="/invoices/new">
-              <Button>+ New invoice</Button>
+              <Button>＋ 新規請求書</Button>
             </Link>
           }
         />
@@ -96,12 +96,12 @@ export default function InvoicesPage() {
           <table className="hidden w-full text-left text-sm md:table">
             <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
               <tr>
-                <th className="px-6 py-3 font-medium">Number</th>
-                <th className="px-6 py-3 font-medium">Client</th>
-                <th className="px-6 py-3 font-medium">Issued</th>
-                <th className="px-6 py-3 font-medium">Due</th>
-                <th className="px-6 py-3 text-right font-medium">Total</th>
-                <th className="px-6 py-3 font-medium">Status</th>
+                <th className="px-6 py-3 font-medium">番号</th>
+                <th className="px-6 py-3 font-medium">取引先</th>
+                <th className="px-6 py-3 font-medium">発行日</th>
+                <th className="px-6 py-3 font-medium">支払期限</th>
+                <th className="px-6 py-3 text-right font-medium">合計</th>
+                <th className="px-6 py-3 font-medium">ステータス</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

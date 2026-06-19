@@ -2,10 +2,12 @@
 
 const ZERO_DECIMAL = new Set(["JPY", "KRW", "VND"]);
 
+const LOCALE = "ja-JP";
+
 export function formatMoney(amount: number, currency = "JPY"): string {
   const fractionDigits = ZERO_DECIMAL.has(currency) ? 0 : 2;
   try {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat(LOCALE, {
       style: "currency",
       currency,
       minimumFractionDigits: fractionDigits,
@@ -20,9 +22,9 @@ export function formatDate(d: Date | string | null | undefined): string {
   if (!d) return "—";
   const date = typeof d === "string" ? new Date(d) : d;
   if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat(LOCALE, {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
   }).format(date);
 }
@@ -61,11 +63,17 @@ export function round2(n: number): number {
 export const CURRENCIES = ["JPY", "USD", "EUR", "GBP", "AUD", "CAD", "KRW"];
 
 export const STATUS_LABELS: Record<string, string> = {
-  DRAFT: "Draft",
-  SENT: "Sent",
-  PAID: "Paid",
-  OVERDUE: "Overdue",
-  CANCELLED: "Cancelled",
+  DRAFT: "下書き",
+  SENT: "送付済み",
+  PAID: "入金済み",
+  OVERDUE: "期限超過",
+  CANCELLED: "キャンセル",
+};
+
+export const ROLE_LABELS: Record<string, string> = {
+  ADMIN: "管理者",
+  MANAGER: "マネージャー",
+  MEMBER: "メンバー",
 };
 
 export const STATUS_STYLES: Record<string, string> = {

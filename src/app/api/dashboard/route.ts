@@ -53,7 +53,7 @@ export async function GET() {
       )
       .reduce((s, inv) => s + inv.total, 0);
     months.push({
-      label: d.toLocaleString(undefined, { month: "short" }),
+      label: d.toLocaleString("ja-JP", { month: "short" }),
       total,
     });
   }

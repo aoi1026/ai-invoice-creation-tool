@@ -7,12 +7,12 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) {
-    return fail("Invalid input", 400, parsed.error.flatten().fieldErrors);
+    return fail("入力内容が正しくありません", 400, parsed.error.flatten().fieldErrors);
   }
   const { companyName, name, email, password } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) return fail("An account with that email already exists", 409);
+  if (existing) return fail("そのメールアドレスは既に登録されています", 409);
 
   const passwordHash = await hashPassword(password);
   const company = await prisma.company.create({

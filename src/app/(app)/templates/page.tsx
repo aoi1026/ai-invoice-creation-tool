@@ -79,24 +79,24 @@ export default function TemplatesPage() {
       };
       if (editing) await api(`/api/templates/${editing.id}`, { method: "PATCH", json: payload });
       else await api("/api/templates", { method: "POST", json: payload });
-      toast.push("Template saved", "success");
+      toast.push("テンプレートを保存しました", "success");
       setOpen(false);
       await load();
     } catch (e) {
-      toast.push(e instanceof Error ? e.message : "Save failed", "error");
+      toast.push(e instanceof Error ? e.message : "保存に失敗しました", "error");
     } finally {
       setSaving(false);
     }
   }
 
   async function remove(t: Template) {
-    if (!confirm(`Delete template “${t.name}”?`)) return;
+    if (!confirm(`テンプレート「${t.name}」を削除しますか？`)) return;
     try {
       await api(`/api/templates/${t.id}`, { method: "DELETE" });
-      toast.push("Template deleted", "success");
+      toast.push("テンプレートを削除しました", "success");
       await load();
     } catch (e) {
-      toast.push(e instanceof Error ? e.message : "Delete failed", "error");
+      toast.push(e instanceof Error ? e.message : "削除に失敗しました", "error");
     }
   }
 
@@ -111,15 +111,15 @@ export default function TemplatesPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader
-        title="Templates"
-        description="Reusable invoice presets to speed up creation."
-        action={<Button onClick={openNew}>+ New template</Button>}
+        title="テンプレート"
+        description="請求書作成を効率化する再利用可能なプリセット。"
+        action={<Button onClick={openNew}>＋ テンプレートを追加</Button>}
       />
 
       {loading ? (
         <div className="flex justify-center py-20"><Spinner className="h-8 w-8" /></div>
       ) : templates.length === 0 ? (
-        <EmptyState title="No templates yet" description="Save common invoices as templates." action={<Button onClick={openNew}>+ New template</Button>} />
+        <EmptyState title="テンプレートがまだありません" description="よく使う請求書をテンプレートとして保存できます。" action={<Button onClick={openNew}>＋ テンプレートを追加</Button>} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {templates.map((t) => {
@@ -131,12 +131,12 @@ export default function TemplatesPage() {
                 <div className="flex-1">
                   <h3 className="font-semibold text-slate-900">{t.name}</h3>
                   {t.description && <p className="mt-0.5 text-sm text-slate-500">{t.description}</p>}
-                  <p className="mt-2 text-xs text-slate-400">{items.length} item(s) · {t.taxRate}% tax</p>
-                  <p className="mt-1 text-sm font-medium text-slate-700">{formatMoney(total, t.currency)} subtotal</p>
+                  <p className="mt-2 text-xs text-slate-400">明細 {items.length} 件 · 税率 {t.taxRate}%</p>
+                  <p className="mt-1 text-sm font-medium text-slate-700">小計 {formatMoney(total, t.currency)}</p>
                 </div>
                 <div className="mt-4 flex gap-2">
-                  <Button size="sm" variant="secondary" onClick={() => openEdit(t)}>Edit</Button>
-                  <Button size="sm" variant="ghost" onClick={() => remove(t)}>Delete</Button>
+                  <Button size="sm" variant="secondary" onClick={() => openEdit(t)}>編集</Button>
+                  <Button size="sm" variant="ghost" onClick={() => remove(t)}>削除</Button>
                 </div>
               </Card>
             );
@@ -147,34 +147,34 @@ export default function TemplatesPage() {
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title={editing ? "Edit template" : "New template"}
+        title={editing ? "テンプレートを編集" : "テンプレートを追加"}
         footer={
           <>
-            <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={save} loading={saving} disabled={!form.name.trim()}>Save</Button>
+            <Button variant="secondary" onClick={() => setOpen(false)}>キャンセル</Button>
+            <Button onClick={save} loading={saving} disabled={!form.name.trim()}>保存</Button>
           </>
         }
       >
         <div className="space-y-4">
-          <Field label="Template name"><Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} /></Field>
-          <Field label="Description"><Input value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} /></Field>
+          <Field label="テンプレート名"><Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} /></Field>
+          <Field label="説明"><Input value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} /></Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Currency">
+            <Field label="通貨">
               <Select value={form.currency} onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}>
                 {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </Select>
             </Field>
-            <Field label="Tax rate (%)">
+            <Field label="税率（%）">
               <Input type="number" step="0.1" value={form.taxRate} onChange={(e) => setForm((f) => ({ ...f, taxRate: Number(e.target.value) }))} />
             </Field>
           </div>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-slate-700">Default line items</p>
+            <p className="mb-2 text-sm font-medium text-slate-700">既定の明細</p>
             <div className="space-y-2">
               {form.items.map((it, i) => (
                 <div key={i} className="grid grid-cols-12 gap-2">
-                  <Input className="col-span-6" placeholder="Description" value={it.description} onChange={(e) => setItem(i, "description", e.target.value)} />
+                  <Input className="col-span-6" placeholder="品目・内容" value={it.description} onChange={(e) => setItem(i, "description", e.target.value)} />
                   <Input className="col-span-2 text-right" type="number" step="any" value={it.quantity} onChange={(e) => setItem(i, "quantity", e.target.value)} />
                   <Input className="col-span-3 text-right" type="number" step="any" value={it.unitPrice} onChange={(e) => setItem(i, "unitPrice", e.target.value)} />
                   <button
@@ -187,11 +187,11 @@ export default function TemplatesPage() {
             <button
               className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
               onClick={() => setForm((f) => ({ ...f, items: [...f.items, { description: "", quantity: 1, unitPrice: 0 }] }))}
-            >+ Add item</button>
+            >＋ 明細を追加</button>
           </div>
 
-          <Field label="Payment terms"><Input value={form.paymentTerms} onChange={(e) => setForm((f) => ({ ...f, paymentTerms: e.target.value }))} /></Field>
-          <Field label="Notes"><Textarea rows={2} value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} /></Field>
+          <Field label="支払条件"><Input value={form.paymentTerms} onChange={(e) => setForm((f) => ({ ...f, paymentTerms: e.target.value }))} /></Field>
+          <Field label="備考"><Textarea rows={2} value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} /></Field>
         </div>
       </Modal>
     </div>

@@ -6,12 +6,12 @@ import { ok, fail } from "@/lib/api";
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = performResetSchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid input", 400);
+  if (!parsed.success) return fail("入力内容が正しくありません", 400);
   const { token, password } = parsed.data;
 
   const record = await prisma.passwordReset.findUnique({ where: { token } });
   if (!record || record.usedAt || record.expiresAt < new Date()) {
-    return fail("This reset link is invalid or has expired", 400);
+    return fail("この再設定リンクは無効か、有効期限が切れています", 400);
   }
 
   const passwordHash = await hashPassword(password);

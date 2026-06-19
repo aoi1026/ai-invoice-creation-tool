@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Invora — AI Invoice Tool",
+  title: "Invora — AI請求書作成ツール",
   description:
-    "Create, manage, and send invoices with AI. Natural-language generation, OCR data extraction, templates, and team management.",
+    "AIで請求書を作成・管理。自然言語からの自動生成、OCRによるデータ抽出、テンプレート、従業員管理に対応。",
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="ja"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

@@ -11,10 +11,10 @@ export async function PATCH(req: Request, { params }: Ctx) {
   const existing = await prisma.invoiceTemplate.findFirst({
     where: { id, companyId: auth.user.companyId },
   });
-  if (!existing) return fail("Template not found", 404);
+  if (!existing) return fail("テンプレートが見つかりません", 404);
   const body = await req.json().catch(() => null);
   const parsed = templateSchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid input", 400, parsed.error.flatten().fieldErrors);
+  if (!parsed.success) return fail("入力内容が正しくありません", 400, parsed.error.flatten().fieldErrors);
   const { items, ...rest } = parsed.data;
   const template = await prisma.invoiceTemplate.update({
     where: { id },
@@ -30,7 +30,7 @@ export async function DELETE(_req: Request, { params }: Ctx) {
   const existing = await prisma.invoiceTemplate.findFirst({
     where: { id, companyId: auth.user.companyId },
   });
-  if (!existing) return fail("Template not found", 404);
+  if (!existing) return fail("テンプレートが見つかりません", 404);
   await prisma.invoiceTemplate.delete({ where: { id } });
   return ok({ success: true });
 }
