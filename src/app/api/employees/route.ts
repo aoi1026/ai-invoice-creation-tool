@@ -27,12 +27,12 @@ export async function POST(req: Request) {
   if ("error" in auth) return auth.error;
   const body = await req.json().catch(() => null);
   const parsed = employeeSchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid input", 400, parsed.error.flatten().fieldErrors);
+  if (!parsed.success) return fail("入力内容が正しくありません", 400, parsed.error.flatten().fieldErrors);
   const { name, email, role, password } = parsed.data;
-  if (!password) return fail("Password is required for a new employee", 400);
+  if (!password) return fail("新しい従業員にはパスワードが必要です", 400);
 
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) return fail("That email is already in use", 409);
+  if (existing) return fail("そのメールアドレスは既に使用されています", 409);
 
   const passwordHash = await hashPassword(password);
   const employee = await prisma.user.create({

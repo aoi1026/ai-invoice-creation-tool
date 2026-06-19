@@ -31,16 +31,16 @@ export default function RegisterPage() {
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : "登録に失敗しました");
       setLoading(false);
     }
   }
 
   return (
     <Card className="p-8">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">Create your account</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-slate-900">アカウントを作成</h1>
       <p className="mt-1 text-sm text-slate-500">
-        Start invoicing in minutes. You&apos;ll be the company administrator.
+        数分で請求業務を開始できます。あなたが会社の管理者になります。
       </p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
@@ -49,27 +49,27 @@ export default function RegisterPage() {
             {error}
           </div>
         )}
-        <Field label="Company name">
-          <Input required value={form.companyName} onChange={set("companyName")} placeholder="Acme Inc." />
+        <Field label="会社名">
+          <Input required value={form.companyName} onChange={set("companyName")} placeholder="株式会社サンプル" />
         </Field>
-        <Field label="Your name">
-          <Input required value={form.name} onChange={set("name")} placeholder="Jane Doe" />
+        <Field label="お名前">
+          <Input required value={form.name} onChange={set("name")} placeholder="山田 太郎" />
         </Field>
-        <Field label="Email">
+        <Field label="メールアドレス">
           <Input type="email" autoComplete="email" required value={form.email} onChange={set("email")} placeholder="you@company.com" />
         </Field>
-        <Field label="Password" hint="At least 8 characters.">
+        <Field label="パスワード" hint="8文字以上で入力してください。">
           <Input type="password" autoComplete="new-password" required value={form.password} onChange={set("password")} placeholder="••••••••" />
         </Field>
         <Button type="submit" loading={loading} className="w-full">
-          Create account
+          アカウントを作成
         </Button>
       </form>
 
       <p className="mt-6 text-center text-sm text-slate-500">
-        Already have an account?{" "}
+        すでにアカウントをお持ちの方は{" "}
         <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-          Sign in
+          ログイン
         </Link>
       </p>
     </Card>

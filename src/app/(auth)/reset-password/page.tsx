@@ -24,7 +24,7 @@ function ResetForm() {
       setDone(true);
       setTimeout(() => router.push("/login"), 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Reset failed");
+      setError(err instanceof Error ? err.message : "再設定に失敗しました");
     } finally {
       setLoading(false);
     }
@@ -33,13 +33,13 @@ function ResetForm() {
   if (!token) {
     return (
       <Card className="p-8">
-        <h1 className="text-xl font-bold text-slate-900">Invalid link</h1>
+        <h1 className="text-xl font-bold text-slate-900">無効なリンク</h1>
         <p className="mt-2 text-sm text-slate-500">
-          This reset link is missing its token.{" "}
+          この再設定リンクにはトークンがありません。{" "}
           <Link href="/forgot-password" className="font-medium text-indigo-600">
-            Request a new one
+            再度リクエストする
           </Link>
-          .
+          。
         </p>
       </Card>
     );
@@ -47,10 +47,10 @@ function ResetForm() {
 
   return (
     <Card className="p-8">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">Choose a new password</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-slate-900">新しいパスワードを設定</h1>
       {done ? (
         <div className="mt-6 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800 ring-1 ring-inset ring-emerald-200">
-          Password updated. Redirecting to sign in…
+          パスワードを更新しました。ログイン画面に移動します…
         </div>
       ) : (
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
@@ -59,11 +59,11 @@ function ResetForm() {
               {error}
             </div>
           )}
-          <Field label="New password" hint="At least 8 characters.">
+          <Field label="新しいパスワード" hint="8文字以上で入力してください。">
             <Input type="password" autoComplete="new-password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
           </Field>
           <Button type="submit" loading={loading} className="w-full">
-            Update password
+            パスワードを更新
           </Button>
         </form>
       )}

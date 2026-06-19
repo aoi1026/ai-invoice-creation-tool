@@ -56,7 +56,7 @@ function client(): Anthropic {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "ANTHROPIC_API_KEY is not configured. Add it to .env to enable AI features.",
+      "ANTHROPIC_API_KEY が設定されていません。.env に設定するとAI機能が有効になります。",
     );
   }
   return new Anthropic({ apiKey });
@@ -65,19 +65,20 @@ function client(): Anthropic {
 function firstJson(content: Anthropic.Messages.ContentBlock[]): AIInvoiceDraft {
   const text = content.find((b) => b.type === "text");
   if (!text || text.type !== "text") {
-    throw new Error("AI returned no text content");
+    throw new Error("AIからテキストが返されませんでした");
   }
   return JSON.parse(text.text) as AIInvoiceDraft;
 }
 
-const SYSTEM = `You convert informal descriptions and scanned documents into structured invoice data for an invoicing application.
-Rules:
-- Infer sensible line items with quantity and unit price. Split lump sums into items when described.
-- unitPrice and quantity are numbers (no currency symbols, no thousands separators).
-- If the user gives a tax-inclusive total, keep unit prices tax-exclusive and set taxRate accordingly.
-- Default currency to JPY and taxRate to 10 when not specified.
-- Dates must be YYYY-MM-DD. Leave a date empty if unknown rather than guessing wildly.
-- Never invent a client name; if absent, use an empty string for clientName's value is not allowed, so use "Customer".`;
+const SYSTEM = `あなたは、日本の請求書アプリ向けに、自由記述の説明やスキャンしたドキュメントから構造化された請求書データを生成するアシスタントです。
+ルール:
+- これは日本のシステムです。clientName・description・notes・paymentTerms などのテキストは、入力が日本語の場合は必ず日本語で出力してください。
+- 妥当な明細（数量・単価）を推測してください。一式の金額が示された場合は、内容に応じて明細に分解してください。
+- unitPrice と quantity は数値のみ（通貨記号や桁区切りカンマを含めない）。
+- 税込合計が示された場合は、単価は税抜のままにして、taxRate を適切に設定してください。
+- 通貨が指定されない場合は JPY、税率が指定されない場合は 10（消費税10%）を既定値とします。
+- 日付は YYYY-MM-DD 形式。不明な場合は推測せず空欄にしてください。
+- 請求先名を勝手に創作しないでください。不明な場合は「お客様」を使用してください。`;
 
 export async function generateInvoiceFromText(
   instruction: string,
@@ -93,7 +94,7 @@ export async function generateInvoiceFromText(
     messages: [
       {
         role: "user",
-        content: `Today is ${today}. Default currency ${context?.defaultCurrency ?? "JPY"}.\n\nCreate an invoice from this request:\n\n${instruction}`,
+        content: `本日は ${today} です。既定の通貨は ${context?.defaultCurrency ?? "JPY"} です。\n\n次の依頼内容から請求書を作成してください：\n\n${instruction}`,
       },
     ],
   });
@@ -140,7 +141,7 @@ export async function extractInvoiceFromFile(
         };
 
   if (mediaType !== "application/pdf" && !SUPPORTED_IMAGE.has(mediaType)) {
-    throw new Error(`Unsupported file type: ${mediaType}`);
+    throw new Error(`対応していないファイル形式です: ${mediaType}`);
   }
 
   const msg = await anthropic.messages.create({
@@ -155,7 +156,7 @@ export async function extractInvoiceFromFile(
           block,
           {
             type: "text",
-            text: `Today is ${today}. Extract all invoice data from this document — recipient, dates, every line item with quantity and unit price, tax rate, currency, and any payment terms or notes. Transcribe numbers exactly as shown.`,
+            text: `本日は ${today} です。このドキュメントからすべての請求書データを抽出してください — 請求先、各日付、数量と単価を含むすべての明細、税率、通貨、支払条件や備考。数値は記載どおり正確に転記してください。`,
           },
         ],
       },

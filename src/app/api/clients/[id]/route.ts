@@ -11,10 +11,10 @@ export async function PATCH(req: Request, { params }: Ctx) {
   const existing = await prisma.client.findFirst({
     where: { id, companyId: auth.user.companyId },
   });
-  if (!existing) return fail("Client not found", 404);
+  if (!existing) return fail("取引先が見つかりません", 404);
   const body = await req.json().catch(() => null);
   const parsed = clientSchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid input", 400, parsed.error.flatten().fieldErrors);
+  if (!parsed.success) return fail("入力内容が正しくありません", 400, parsed.error.flatten().fieldErrors);
   const client = await prisma.client.update({ where: { id }, data: parsed.data });
   return ok({ client });
 }
@@ -26,7 +26,7 @@ export async function DELETE(_req: Request, { params }: Ctx) {
   const existing = await prisma.client.findFirst({
     where: { id, companyId: auth.user.companyId },
   });
-  if (!existing) return fail("Client not found", 404);
+  if (!existing) return fail("取引先が見つかりません", 404);
   await prisma.client.delete({ where: { id } });
   return ok({ success: true });
 }

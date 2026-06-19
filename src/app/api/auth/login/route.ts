@@ -6,15 +6,15 @@ import { ok, fail } from "@/lib/api";
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = loginSchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid input", 400);
+  if (!parsed.success) return fail("入力内容が正しくありません", 400);
   const { email, password } = parsed.data;
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !user.active) {
-    return fail("Invalid email or password", 401);
+    return fail("メールアドレスまたはパスワードが正しくありません", 401);
   }
   const valid = await verifyPassword(password, user.passwordHash);
-  if (!valid) return fail("Invalid email or password", 401);
+  if (!valid) return fail("メールアドレスまたはパスワードが正しくありません", 401);
 
   await createSession({
     userId: user.id,

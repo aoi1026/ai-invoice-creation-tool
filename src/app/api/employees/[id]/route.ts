@@ -13,11 +13,11 @@ export async function PATCH(req: Request, { params }: Ctx) {
   const target = await prisma.user.findFirst({
     where: { id, companyId: auth.user.companyId },
   });
-  if (!target) return fail("Employee not found", 404);
+  if (!target) return fail("従業員が見つかりません", 404);
 
   const body = await req.json().catch(() => null);
   const parsed = employeeSchema.partial().safeParse(body);
-  if (!parsed.success) return fail("Invalid input", 400, parsed.error.flatten().fieldErrors);
+  if (!parsed.success) return fail("入力内容が正しくありません", 400, parsed.error.flatten().fieldErrors);
   const data = parsed.data;
 
   // Don't allow demoting/deactivating the last active admin.
@@ -29,7 +29,7 @@ export async function PATCH(req: Request, { params }: Ctx) {
       where: { companyId: auth.user.companyId, role: "ADMIN", active: true },
     });
     if (adminCount <= 1) {
-      return fail("You cannot remove the last active administrator", 400);
+      return fail("最後の有効な管理者は削除・変更できません", 400);
     }
   }
 
@@ -51,12 +51,12 @@ export async function DELETE(_req: Request, { params }: Ctx) {
   const auth = await requireUser("ADMIN");
   if ("error" in auth) return auth.error;
   const { id } = await params;
-  if (id === auth.user.id) return fail("You cannot delete your own account", 400);
+  if (id === auth.user.id) return fail("自分のアカウントは削除できません", 400);
 
   const target = await prisma.user.findFirst({
     where: { id, companyId: auth.user.companyId },
   });
-  if (!target) return fail("Employee not found", 404);
+  if (!target) return fail("従業員が見つかりません", 404);
 
   await prisma.user.delete({ where: { id } });
   return ok({ success: true });

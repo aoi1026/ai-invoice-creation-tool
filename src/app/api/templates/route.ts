@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   if ("error" in auth) return auth.error;
   const body = await req.json().catch(() => null);
   const parsed = templateSchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid input", 400, parsed.error.flatten().fieldErrors);
+  if (!parsed.success) return fail("入力内容が正しくありません", 400, parsed.error.flatten().fieldErrors);
   const { items, ...rest } = parsed.data;
   const template = await prisma.invoiceTemplate.create({
     data: {

@@ -68,7 +68,7 @@ export default function EditInvoicePage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title={`Edit ${initial.number}`} description="Update invoice details." />
+      <PageHeader title={`${initial.number} を編集`} description="請求書の内容を更新します。" />
       <InvoiceEditor initial={initial} />
     </div>
   );

@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-  companyName: z.string().min(1, "Company name is required").max(120),
-  name: z.string().min(1, "Your name is required").max(120),
-  email: z.string().email("Valid email required").max(180),
-  password: z.string().min(8, "Password must be at least 8 characters").max(200),
+  companyName: z.string().min(1, "会社名を入力してください").max(120),
+  name: z.string().min(1, "お名前を入力してください").max(120),
+  email: z.string().email("有効なメールアドレスを入力してください").max(180),
+  password: z.string().min(8, "パスワードは8文字以上で入力してください").max(200),
 });
 
 export const loginSchema = z.object({
@@ -37,11 +37,11 @@ export const invoiceSchema = z.object({
   notes: z.string().max(2000).optional().nullable(),
   paymentTerms: z.string().max(1000).optional().nullable(),
   clientId: z.string().optional().nullable(),
-  clientName: z.string().min(1, "Client name is required").max(180),
+  clientName: z.string().min(1, "請求先名を入力してください").max(180),
   clientEmail: z.string().max(180).optional().nullable(),
   clientAddress: z.string().max(500).optional().nullable(),
   clientTaxId: z.string().max(80).optional().nullable(),
-  items: z.array(lineItemSchema).min(1, "Add at least one line item"),
+  items: z.array(lineItemSchema).min(1, "明細を1件以上追加してください"),
 });
 
 export const clientSchema = z.object({

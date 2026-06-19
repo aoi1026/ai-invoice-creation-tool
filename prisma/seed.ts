@@ -11,16 +11,16 @@ async function main() {
   const email = "demo@invoice.app";
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    console.log("Seed already present (demo@invoice.app). Skipping.");
+    console.log("シードデータは既に存在します（demo@invoice.app）。スキップします。");
     return;
   }
 
   const company = await prisma.company.create({
     data: {
-      name: "Aurora Studio Inc.",
-      email: "billing@aurora.example",
-      phone: "+81 3-1234-5678",
-      address: "1-2-3 Shibuya, Shibuya-ku, Tokyo 150-0002, Japan",
+      name: "株式会社アオイウェブスタジオ",
+      email: "billing@aoi-webstudio.example",
+      phone: "03-1234-5678",
+      address: "〒150-0002 東京都渋谷区渋谷1-2-3 アオイビル5F",
       taxId: "T1234567890123",
       invoicePrefix: "INV-2026-",
       nextNumber: 4,
@@ -33,21 +33,21 @@ async function main() {
     data: [
       {
         email,
-        name: "Demo Admin",
+        name: "管理者 太郎",
         passwordHash,
         role: "ADMIN",
         companyId: company.id,
       },
       {
         email: "manager@invoice.app",
-        name: "Mei Manager",
+        name: "鈴木 花子",
         passwordHash,
         role: "MANAGER",
         companyId: company.id,
       },
       {
         email: "member@invoice.app",
-        name: "Kai Member",
+        name: "佐藤 健",
         passwordHash,
         role: "MEMBER",
         companyId: company.id,
@@ -60,40 +60,40 @@ async function main() {
   const acme = await prisma.client.create({
     data: {
       companyId: company.id,
-      name: "Acme Robotics K.K.",
-      email: "ap@acme.example",
-      address: "5-6-7 Marunouchi, Chiyoda-ku, Tokyo",
+      name: "株式会社アクメ",
+      email: "keiri@acme.example",
+      address: "〒100-0005 東京都千代田区丸の内5-6-7",
       taxId: "T9876543210987",
     },
   });
   const globex = await prisma.client.create({
     data: {
       companyId: company.id,
-      name: "Globex Trading Ltd.",
+      name: "グローベックス商事株式会社",
       email: "finance@globex.example",
-      address: "88 Orchard Road, Singapore",
+      address: "〒530-0001 大阪府大阪市北区梅田8-8-8",
     },
   });
 
   await prisma.invoiceTemplate.create({
     data: {
       companyId: company.id,
-      name: "Monthly Retainer",
-      description: "Standard monthly design retainer",
+      name: "月額顧問契約",
+      description: "標準の月額デザイン顧問契約",
       currency: "JPY",
       taxRate: 10,
-      paymentTerms: "Net 30",
-      notes: "Thank you for your continued partnership.",
+      paymentTerms: "月末締め翌月末払い",
+      notes: "いつもお取引いただきありがとうございます。",
       itemsJson: JSON.stringify([
-        { description: "Design retainer — monthly", quantity: 1, unitPrice: 300000 },
-        { description: "Additional revisions (hours)", quantity: 5, unitPrice: 12000 },
+        { description: "デザイン顧問料（月額）", quantity: 1, unitPrice: 300000 },
+        { description: "追加修正対応（時間）", quantity: 5, unitPrice: 12000 },
       ]),
     },
   });
 
   type Item = { description: string; quantity: number; unitPrice: number };
   const make = (
-    n: number,
+    number: string,
     client: { id: string; name: string; email: string | null; address: string | null; taxId: string | null },
     status: "DRAFT" | "SENT" | "PAID" | "OVERDUE",
     items: Item[],
@@ -108,7 +108,7 @@ async function main() {
         companyId: company.id,
         createdById: admin.id,
         clientId: client.id,
-        number: `INV-2026-00${n}`,
+        number,
         status,
         currency: "JPY",
         taxRate: 10,
@@ -117,7 +117,7 @@ async function main() {
         subtotal,
         taxAmount,
         total: round2(subtotal + taxAmount),
-        paymentTerms: "Net 30",
+        paymentTerms: "月末締め翌月末払い",
         clientName: client.name,
         clientEmail: client.email,
         clientAddress: client.address,
@@ -135,21 +135,67 @@ async function main() {
     });
   };
 
-  await make(1, acme, "PAID", [
-    { description: "Brand identity package", quantity: 1, unitPrice: 850000 },
-    { description: "Logo variations", quantity: 3, unitPrice: 40000 },
+  // Recent invoices in various statuses
+  await make("INV-2026-001", acme, "PAID", [
+    { description: "ブランドアイデンティティ一式", quantity: 1, unitPrice: 850000 },
+    { description: "ロゴバリエーション", quantity: 3, unitPrice: 40000 },
   ], 40);
-  await make(2, globex, "SENT", [
-    { description: "Website redesign", quantity: 1, unitPrice: 1200000 },
-    { description: "CMS integration (days)", quantity: 8, unitPrice: 90000 },
+  await make("INV-2026-002", globex, "SENT", [
+    { description: "Webサイトリニューアル", quantity: 1, unitPrice: 1200000 },
+    { description: "CMS構築（人日）", quantity: 8, unitPrice: 90000 },
   ], 12);
-  await make(3, acme, "OVERDUE", [
-    { description: "Monthly retainer — March", quantity: 1, unitPrice: 300000 },
+  await make("INV-2026-003", acme, "OVERDUE", [
+    { description: "月額顧問料（3月分）", quantity: 1, unitPrice: 300000 },
   ], 55);
 
-  console.log("✅ Seed complete.");
-  console.log("   Login: demo@invoice.app / password123 (ADMIN)");
-  console.log("   Also: manager@invoice.app, member@invoice.app / password123");
+  // Paid invoices spread across the last 6 months for the revenue chart
+  const monthly: { amount: number; client: typeof acme; n: number }[] = [
+    { amount: 420000, client: acme, n: 100 },
+    { amount: 780000, client: globex, n: 101 },
+    { amount: 540000, client: acme, n: 102 },
+    { amount: 910000, client: globex, n: 103 },
+    { amount: 660000, client: acme, n: 104 },
+    { amount: 1250000, client: globex, n: 105 },
+  ];
+  const now = new Date();
+  let idx = 0;
+  for (const m of monthly) {
+    const monthsAgo = 5 - idx;
+    const issue = new Date(now.getFullYear(), now.getMonth() - monthsAgo, 12);
+    const due = new Date(issue.getTime() + 30 * 86400000);
+    const tax = round2(m.amount * 0.1);
+    await prisma.invoice.create({
+      data: {
+        companyId: company.id,
+        createdById: admin.id,
+        clientId: m.client.id,
+        number: `INV-2026-1${m.n.toString().slice(-2)}`,
+        status: "PAID",
+        currency: "JPY",
+        taxRate: 10,
+        issueDate: issue,
+        dueDate: due,
+        subtotal: m.amount,
+        taxAmount: tax,
+        total: round2(m.amount + tax),
+        paymentTerms: "月末締め翌月末払い",
+        clientName: m.client.name,
+        clientEmail: m.client.email,
+        clientAddress: m.client.address,
+        clientTaxId: m.client.taxId,
+        items: {
+          create: [
+            { description: "業務委託料", quantity: 1, unitPrice: m.amount, amount: m.amount, position: 0 },
+          ],
+        },
+      },
+    });
+    idx++;
+  }
+
+  console.log("✅ シードデータを作成しました。");
+  console.log("   ログイン: demo@invoice.app / password123（管理者）");
+  console.log("   他: manager@invoice.app, member@invoice.app / password123");
 }
 
 main()

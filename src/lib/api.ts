@@ -19,10 +19,10 @@ export function fail(message: string, status = 400, extra?: unknown) {
 export async function requireUser(minRole?: Role) {
   const user = await getCurrentUser();
   if (!user) {
-    return { error: fail("Unauthorized", 401) } as const;
+    return { error: fail("ログインが必要です", 401) } as const;
   }
   if (minRole && !hasRole(user.role, minRole)) {
-    return { error: fail("Forbidden — insufficient permissions", 403) } as const;
+    return { error: fail("権限がありません", 403) } as const;
   }
   return { user } as const;
 }

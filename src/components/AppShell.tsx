@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { api, classNames } from "@/lib/client";
+import { ROLE_LABELS } from "@/lib/format";
 import type { Role } from "@/generated/prisma";
 
 type NavItem = {
@@ -24,12 +25,12 @@ function icon(path: string) {
 }
 
 const NAV: NavItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: icon("M3 12l9-9 9 9M5 10v10h14V10") },
-  { href: "/invoices", label: "Invoices", icon: icon("M7 3h7l4 4v14H6V4M14 3v5h5M9 13h6M9 17h4") },
-  { href: "/clients", label: "Clients", icon: icon("M16 14a4 4 0 10-8 0M12 7a3 3 0 100-6 3 3 0 000 6M4 21v-1a4 4 0 014-4h8a4 4 0 014 4v1") },
-  { href: "/templates", label: "Templates", icon: icon("M4 5h16M4 5v14h16V5M9 9h6M9 13h6") },
-  { href: "/employees", label: "Team", icon: icon("M17 20h5v-1a4 4 0 00-3-3.87M9 20H4v-1a4 4 0 013-3.87m6-1a4 4 0 100-8 4 4 0 000 8z"), minRole: "MANAGER" },
-  { href: "/settings", label: "Settings", icon: icon("M10.3 3.2a1 1 0 011.4 0l.9.9a1 1 0 001 .25l1.2-.3a1 1 0 011.2.7l.3 1.2a1 1 0 00.7.7l1.2.3a1 1 0 01.7 1.2l-.3 1.2a1 1 0 00.25 1l.9.9a1 1 0 010 1.4M12 15a3 3 0 100-6 3 3 0 000 6z") },
+  { href: "/dashboard", label: "ダッシュボード", icon: icon("M3 12l9-9 9 9M5 10v10h14V10") },
+  { href: "/invoices", label: "請求書", icon: icon("M7 3h7l4 4v14H6V4M14 3v5h5M9 13h6M9 17h4") },
+  { href: "/clients", label: "取引先", icon: icon("M16 14a4 4 0 10-8 0M12 7a3 3 0 100-6 3 3 0 000 6M4 21v-1a4 4 0 014-4h8a4 4 0 014 4v1") },
+  { href: "/templates", label: "テンプレート", icon: icon("M4 5h16M4 5v14h16V5M9 9h6M9 13h6") },
+  { href: "/employees", label: "チーム", icon: icon("M17 20h5v-1a4 4 0 00-3-3.87M9 20H4v-1a4 4 0 013-3.87m6-1a4 4 0 100-8 4 4 0 000 8z"), minRole: "MANAGER" },
+  { href: "/settings", label: "設定", icon: icon("M10.3 3.2a1 1 0 011.4 0l.9.9a1 1 0 001 .25l1.2-.3a1 1 0 011.2.7l.3 1.2a1 1 0 00.7.7l1.2.3a1 1 0 01.7 1.2l-.3 1.2a1 1 0 00.25 1l.9.9a1 1 0 010 1.4M12 15a3 3 0 100-6 3 3 0 000 6z") },
 ];
 
 export type SessionUser = {
@@ -102,11 +103,11 @@ export function AppShell({
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-slate-900">{user.name}</p>
-            <p className="truncate text-xs text-slate-500">{user.role}</p>
+            <p className="truncate text-xs text-slate-500">{ROLE_LABELS[user.role] ?? user.role}</p>
           </div>
           <button
             onClick={logout}
-            title="Sign out"
+            title="ログアウト"
             className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
           >
             <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" strokeWidth="1.7" stroke="currentColor">

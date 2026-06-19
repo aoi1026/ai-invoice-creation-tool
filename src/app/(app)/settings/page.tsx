@@ -53,9 +53,9 @@ export default function SettingsPage() {
           invoicePrefix: form.invoicePrefix || undefined,
         },
       });
-      toast.push("Company settings saved", "success");
+      toast.push("会社設定を保存しました", "success");
     } catch (e) {
-      toast.push(e instanceof Error ? e.message : "Save failed", "error");
+      toast.push(e instanceof Error ? e.message : "保存に失敗しました", "error");
     } finally {
       setSaving(false);
     }
@@ -70,35 +70,35 @@ export default function SettingsPage() {
   return (
     <div className="animate-fade-in max-w-2xl">
       <PageHeader
-        title="Settings"
-        description={isAdmin ? "Your company profile appears on every invoice." : "Only admins can edit company settings."}
+        title="設定"
+        description={isAdmin ? "会社情報はすべての請求書に表示されます。" : "会社設定を編集できるのは管理者のみです。"}
       />
 
       <Card className="p-6">
-        <h2 className="text-sm font-semibold text-slate-900">Company profile</h2>
+        <h2 className="text-sm font-semibold text-slate-900">会社情報</h2>
         <div className="mt-4 space-y-4">
-          <Field label="Company name"><Input value={form.name} onChange={set("name")} disabled={!isAdmin} /></Field>
+          <Field label="会社名"><Input value={form.name} onChange={set("name")} disabled={!isAdmin} /></Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Email"><Input type="email" value={form.email} onChange={set("email")} disabled={!isAdmin} /></Field>
-            <Field label="Phone"><Input value={form.phone} onChange={set("phone")} disabled={!isAdmin} /></Field>
+            <Field label="メールアドレス"><Input type="email" value={form.email} onChange={set("email")} disabled={!isAdmin} /></Field>
+            <Field label="電話番号"><Input value={form.phone} onChange={set("phone")} disabled={!isAdmin} /></Field>
           </div>
-          <Field label="Address"><Textarea rows={2} value={form.address} onChange={set("address")} disabled={!isAdmin} /></Field>
-          <Field label="Tax ID / 登録番号"><Input value={form.taxId} onChange={set("taxId")} disabled={!isAdmin} /></Field>
+          <Field label="住所"><Textarea rows={2} value={form.address} onChange={set("address")} disabled={!isAdmin} /></Field>
+          <Field label="登録番号（インボイス）"><Input value={form.taxId} onChange={set("taxId")} disabled={!isAdmin} /></Field>
         </div>
 
-        <h2 className="mt-8 text-sm font-semibold text-slate-900">Invoice numbering</h2>
+        <h2 className="mt-8 text-sm font-semibold text-slate-900">請求書番号</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <Field label="Number prefix" hint="e.g. INV-2026-">
+          <Field label="番号プレフィックス" hint="例：INV-2026-">
             <Input value={form.invoicePrefix} onChange={set("invoicePrefix")} disabled={!isAdmin} />
           </Field>
-          <Field label="Next number" hint="Auto-incremented per invoice">
+          <Field label="次の番号" hint="請求書ごとに自動採番されます">
             <Input value={company.nextNumber} disabled />
           </Field>
         </div>
 
         {isAdmin && (
           <div className="mt-6 flex justify-end">
-            <Button onClick={save} loading={saving}>Save changes</Button>
+            <Button onClick={save} loading={saving}>変更を保存</Button>
           </div>
         )}
       </Card>

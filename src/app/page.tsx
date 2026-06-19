@@ -4,28 +4,28 @@ import { getSession } from "@/lib/auth";
 
 const FEATURES = [
   {
-    title: "AI invoice generation",
-    body: "Describe a job in plain language and Invora drafts a complete invoice — line items, quantities, taxes and all.",
+    title: "AI請求書生成",
+    body: "自然言語で内容を伝えるだけで、明細・数量・税額まで揃った請求書を自動でドラフト作成します。",
   },
   {
-    title: "OCR data extraction",
-    body: "Upload a photo or PDF of a receipt or quote and let Claude transcribe it into a structured invoice.",
+    title: "OCRデータ抽出",
+    body: "領収書や見積書の写真・PDFをアップロードすると、Claudeが読み取り、構造化された請求書に変換します。",
   },
   {
-    title: "Reusable templates",
-    body: "Save your common invoices as templates and spin up a new one in seconds.",
+    title: "テンプレート管理",
+    body: "よく使う請求書をテンプレートとして保存し、数秒で新しい請求書を作成できます。",
   },
   {
-    title: "Team & permissions",
-    body: "Invite employees with Admin, Manager, or Member roles and control who can do what.",
+    title: "従業員・権限管理",
+    body: "管理者・マネージャー・メンバーの権限で従業員を招待し、操作範囲を制御できます。",
   },
   {
-    title: "Search & history",
-    body: "Filter by status, client, or number across your full invoice history.",
+    title: "検索・履歴管理",
+    body: "ステータス・取引先・番号で、すべての請求書履歴を絞り込めます。",
   },
   {
-    title: "PDF export",
-    body: "Download polished, print-ready PDF invoices in a single click.",
+    title: "PDFダウンロード",
+    body: "印刷に適した美しいPDF請求書をワンクリックでダウンロードできます。",
   },
 ];
 
@@ -45,13 +45,13 @@ export default async function Landing() {
             href="/login"
             className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
           >
-            Sign in
+            ログイン
           </Link>
           <Link
             href="/register"
             className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500"
           >
-            Get started
+            はじめる
           </Link>
         </nav>
       </header>
@@ -61,34 +61,34 @@ export default async function Landing() {
           <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
             <div className="mx-auto max-w-3xl text-center">
               <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200">
-                Powered by Claude
+                Claude搭載
               </span>
               <h1 className="mt-6 text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-                Invoicing that writes{" "}
+                請求書が、ひとりでに{" "}
                 <span className="bg-gradient-to-r from-indigo-600 to-violet-500 bg-clip-text text-transparent">
-                  itself
+                  仕上がる
                 </span>
               </h1>
               <p className="mt-6 text-lg leading-8 text-slate-600">
-                Generate invoices from a sentence, extract data from any receipt with
-                OCR, manage clients and your team — all in one beautifully simple tool.
+                一文から請求書を生成し、領収書をOCRで読み取り、取引先やチームを管理。
+                すべてをひとつのシンプルなツールで。
               </p>
               <div className="mt-10 flex items-center justify-center gap-4">
                 <Link
                   href="/register"
                   className="rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-indigo-500"
                 >
-                  Create your account
+                  アカウントを作成
                 </Link>
                 <Link
                   href="/login"
                   className="rounded-lg px-6 py-3 text-base font-semibold text-slate-700 hover:bg-slate-100"
                 >
-                  Sign in →
+                  ログイン →
                 </Link>
               </div>
               <p className="mt-4 text-sm text-slate-500">
-                Demo login: <code className="font-mono">demo@invoice.app</code> /{" "}
+                デモログイン: <code className="font-mono">demo@invoice.app</code> /{" "}
                 <code className="font-mono">password123</code>
               </p>
             </div>
@@ -113,7 +113,7 @@ export default async function Landing() {
 
       <footer className="border-t border-slate-200 py-8">
         <p className="text-center text-sm text-slate-500">
-          Invora — AI Invoice Tool. Built with Next.js, Prisma &amp; Claude.
+          Invora — AI請求書作成ツール。Next.js・Prisma・Claudeで構築。
         </p>
       </footer>
     </div>

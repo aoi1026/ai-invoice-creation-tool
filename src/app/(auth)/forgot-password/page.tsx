@@ -30,39 +30,39 @@ export default function ForgotPasswordPage() {
 
   return (
     <Card className="p-8">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">Reset your password</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-slate-900">パスワードの再設定</h1>
       <p className="mt-1 text-sm text-slate-500">
-        Enter your email and we&apos;ll send you a reset link.
+        メールアドレスを入力すると、再設定用のリンクをお送りします。
       </p>
 
       {sent ? (
         <div className="mt-6 space-y-4">
           <div className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800 ring-1 ring-inset ring-emerald-200">
-            If an account exists for that email, a reset link has been sent.
+            このメールアドレスのアカウントが存在する場合、再設定用リンクを送信しました。
           </div>
           {devUrl && (
             <div className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-200">
-              <p className="font-medium">Dev mode — no email provider configured.</p>
+              <p className="font-medium">開発モード — メール送信は未設定です。</p>
               <Link href={devUrl} className="mt-1 block font-medium text-indigo-600 underline">
-                Open reset link →
+                再設定リンクを開く →
               </Link>
             </div>
           )}
         </div>
       ) : (
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
-          <Field label="Email">
+          <Field label="メールアドレス">
             <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" />
           </Field>
           <Button type="submit" loading={loading} className="w-full">
-            Send reset link
+            再設定リンクを送信
           </Button>
         </form>
       )}
 
       <p className="mt-6 text-center text-sm text-slate-500">
         <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-          ← Back to sign in
+          ← ログインに戻る
         </Link>
       </p>
     </Card>

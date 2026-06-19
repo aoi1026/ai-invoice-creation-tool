@@ -12,10 +12,10 @@ export async function POST(req: Request) {
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File)) {
-    return fail("Upload a document or image file", 400);
+    return fail("ドキュメントまたは画像ファイルをアップロードしてください", 400);
   }
   if (file.size > MAX_BYTES) {
-    return fail("File too large (max 15 MB)", 400);
+    return fail("ファイルサイズが大きすぎます（最大15MB）", 400);
   }
 
   const allowed = [
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     "application/pdf",
   ];
   if (!allowed.includes(file.type)) {
-    return fail(`Unsupported file type: ${file.type || "unknown"}`, 400);
+    return fail(`対応していないファイル形式です: ${file.type || "不明"}`, 400);
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     const draft = await extractInvoiceFromFile(base64, file.type);
     return ok({ draft });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "OCR extraction failed";
+    const message = err instanceof Error ? err.message : "OCR抽出に失敗しました";
     const status = message.includes("ANTHROPIC_API_KEY") ? 503 : 502;
     return fail(message, status);
   }

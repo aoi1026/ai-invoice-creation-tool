@@ -34,4 +34,8 @@ body {
 @media print {
   .no-print { display: none !important; }
   body { background: #fff; }
+  /* Neutralize the app-shell sidebar offset and page padding so the invoice
+     document prints centered without the navigation gutter. */
+  .lg\:pl-64 { padding-left: 0 !important; }
+  main { padding: 0 !important; }
 }

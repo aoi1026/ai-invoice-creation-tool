@@ -17,7 +17,7 @@ export async function GET(_req: Request, { params }: Ctx) {
       createdBy: { select: { name: true, email: true } },
     },
   });
-  if (!invoice) return fail("Invoice not found", 404);
+  if (!invoice) return fail("請求書が見つかりません", 404);
   return ok({ invoice });
 }
 
@@ -29,12 +29,12 @@ export async function PATCH(req: Request, { params }: Ctx) {
   const existing = await prisma.invoice.findFirst({
     where: { id, companyId: auth.user.companyId },
   });
-  if (!existing) return fail("Invoice not found", 404);
+  if (!existing) return fail("請求書が見つかりません", 404);
 
   const body = await req.json().catch(() => null);
   const parsed = invoiceSchema.safeParse(body);
   if (!parsed.success) {
-    return fail("Invalid invoice", 400, parsed.error.flatten().fieldErrors);
+    return fail("請求書の内容が正しくありません", 400, parsed.error.flatten().fieldErrors);
   }
 
   const { items, base } = buildInvoiceData(parsed.data);
@@ -44,7 +44,7 @@ export async function PATCH(req: Request, { params }: Ctx) {
     const dupe = await prisma.invoice.findUnique({
       where: { companyId_number: { companyId: auth.user.companyId, number } },
     });
-    if (dupe) return fail(`Invoice number ${number} already exists`, 409);
+    if (dupe) return fail(`請求書番号 ${number} は既に存在します`, 409);
   }
 
   const invoice = await prisma.$transaction(async (tx) => {
@@ -67,7 +67,7 @@ export async function DELETE(_req: Request, { params }: Ctx) {
   const existing = await prisma.invoice.findFirst({
     where: { id, companyId: auth.user.companyId },
   });
-  if (!existing) return fail("Invoice not found", 404);
+  if (!existing) return fail("請求書が見つかりません", 404);
 
   await prisma.invoice.delete({ where: { id } });
   return ok({ success: true });

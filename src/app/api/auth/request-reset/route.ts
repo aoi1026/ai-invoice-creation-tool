@@ -6,7 +6,7 @@ import { ok, fail } from "@/lib/api";
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = requestResetSchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid email", 400);
+  if (!parsed.success) return fail("メールアドレスが正しくありません", 400);
 
   const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
 
